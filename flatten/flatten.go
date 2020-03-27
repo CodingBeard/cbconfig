@@ -97,7 +97,14 @@ func flatten(top bool, flatMap map[string]interface{}, nested interface{}, prefi
 		interfaceMap, ok := nested.(map[interface{}]interface{})
 		if ok {
 			for k, v := range interfaceMap {
-				newKey := enkey(top, prefix, k.(string), style)
+				keyString, isString := k.(string)
+				keyInt, isInt := k.(int)
+				var newKey string
+				if isString {
+					newKey = enkey(top, prefix, keyString, style)
+				} else if isInt {
+					newKey = enkey(top, prefix, strconv.Itoa(keyInt), style)
+				}
 				e := assign(newKey, v)
 				if e != nil {
 					return e
