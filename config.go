@@ -146,8 +146,17 @@ func (c *Config) GetRequiredString(path string) (string, error) {
 
 func (c *Config) GetIntSlice(path string) []int {
 	value := c.data[path]
-	intSliceValue, _ := value.([]int)
-	return intSliceValue
+	var returnValue []int
+	interfaceSlice, ok := value.([]interface{})
+	if ok {
+		for _, intInterface := range interfaceSlice {
+			intValue, ok := intInterface.(int)
+			if ok {
+				returnValue = append(returnValue, intValue)
+			}
+		}
+	}
+	return returnValue
 }
 
 func (c *Config) GetRequiredIntSlice(path string) ([]int, error) {
@@ -156,8 +165,17 @@ func (c *Config) GetRequiredIntSlice(path string) ([]int, error) {
 	if e != nil {
 		return returnValue, e
 	}
-	returnValue, ok := value.([]int)
-	if !ok {
+	intSliceInterfaces, ok := value.([]interface{})
+	if ok {
+		for _, intInterface := range intSliceInterfaces {
+			intValue, ok := intInterface.(int)
+			if ok {
+				returnValue = append(returnValue, intValue)
+			} else {
+				return returnValue, fmt.Errorf("%s was not a int slice", path)
+			}
+		}
+	} else {
 		return returnValue, fmt.Errorf("%s was not a int slice", path)
 	}
 	return returnValue, nil
@@ -165,8 +183,17 @@ func (c *Config) GetRequiredIntSlice(path string) ([]int, error) {
 
 func (c *Config) GetStringSlice(path string) []string {
 	value := c.data[path]
-	stringSliceValue, _ := value.([]string)
-	return stringSliceValue
+	var returnValue []string
+	interfaceSlice, ok := value.([]interface{})
+	if ok {
+		for _, stringInterface := range interfaceSlice {
+			stringValue, ok := stringInterface.(string)
+			if ok {
+				returnValue = append(returnValue, stringValue)
+			}
+		}
+	}
+	return returnValue
 }
 
 func (c *Config) GetRequiredStringSlice(path string) ([]string, error) {
@@ -175,8 +202,17 @@ func (c *Config) GetRequiredStringSlice(path string) ([]string, error) {
 	if e != nil {
 		return returnValue, e
 	}
-	returnValue, ok := value.([]string)
-	if !ok {
+	stringSliceInterfaces, ok := value.([]interface{})
+	if ok {
+		for _, stringInterface := range stringSliceInterfaces {
+			stringValue, ok := stringInterface.(string)
+			if ok {
+				returnValue = append(returnValue, stringValue)
+			} else {
+				return returnValue, fmt.Errorf("%s was not a string slice", path)
+			}
+		}
+	} else {
 		return returnValue, fmt.Errorf("%s was not a string slice", path)
 	}
 	return returnValue, nil
